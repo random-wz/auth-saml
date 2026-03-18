@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  saml-sp:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_BASE_URL=http://localhost:8080
+      - SAML_IDP_METADATA_URL=http://simplesamlphp:8080/simplesaml/saml2/idp/metadata.php
+      - COOKIE_HASH_KEY=your-32-byte-hash-key-change-me!!
+      - COOKIE_BLOCK_KEY=your-32-byte-block-key-change!!
+    volumes:
+      - ./certs:/app/certs
+      - ./config.yaml:/app/config.yaml
+    depends_on:
+      - simplesamlphp
+
+  # 用于本地测试的 SimpleSAMLphp IdP
+  simplesamlphp:
+    image: kristophjunge/test-saml-idp:latest
+    ports:
+      - "8086:8080"
+    environment:
+      - SIMPLESAMLPHP_SP_ENTITY_ID=http://localhost:8080/saml/metadata
+      - SIMPLESAMLPHP_SP_ASSERTION_CONSUMER_SERVICE=http://localhost:8080/saml/acs
+      - SIMPLESAMLPHP_SP_SINGLE_LOGOUT_SERVICE=http://localhost:8080/saml/slo

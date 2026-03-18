@@ -1,0 +1,5 @@
+saml-auth
+certs/*.crt
+certs/*.key
+config.yaml
+*.pem
